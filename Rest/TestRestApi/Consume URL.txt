@@ -1,0 +1,18 @@
+String urlString = "http://localhost:9090/RunInformatica/dvlx/VENDOR_WEBMD/W_TEST1";
+        try {
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            InputStream inputStream = connection.getInputStream();
+            StringBuilder outputBuffer = new StringBuilder();
+            int readBytes = inputStream.read();
+            while(readBytes != 0xffffffff)
+            {
+                outputBuffer.append((char)readBytes);
+                readBytes = inputStream.read();
+            }
+            System.out.println(outputBuffer.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
