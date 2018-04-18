@@ -1,0 +1,47 @@
+@RequestMapping(value="/info/placeFile",method = RequestMethod.GET ,produces = "application/json")
+    public String placeFile() {
+
+        String password;
+        Map<String, String> props = new HashMap<>();
+        String result = null;
+
+        props = determineProperties("dvlx");
+
+        try {
+            password = PasswordEncryption.decryptPassword(props.get("password"), props.get("passKey"));
+            SSHManger sshManger = new SSHManger();
+            sshManger.SSHConnect(props.get("userName"), password, props.get("host"), props.get("knownHosts"));
+            System.out.println("Connected to Informatica Server");
+            result = sshManger.putFile("\\\\dhp\\dfs\\Non-Integration\\SAFeData\\SixDegrees\\TEST_MKS.txt","/info1/informatica/infodvlx/SrcFiles/MKS_TEST2.txt");
+            //result = sshManger.getFile("/info1/informatica/infodvlx/SrcFiles/EXCEPTION.TXT", "src/main/resources/TEST_MKS1.txt");
+            sshManger.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value="/info/receiveFile",method = RequestMethod.GET)
+    public String receiveFile() {
+
+        String password;
+        Map<String, String> props = new HashMap<>();
+        String result = null;
+
+        props = determineProperties("dvlx");
+
+        try {
+            password = PasswordEncryption.decryptPassword(props.get("password"), props.get("passKey"));
+            SSHManger sshManger = new SSHManger();
+            sshManger.SSHConnect(props.get("userName"), password, props.get("host"), props.get("knownHosts"));
+            System.out.println("Connected to Informatica Server");
+            //result = sshManger.putFile("src/main/resources/TEST_MKS.txt","/info1/informatica/infodvlx/SrcFiles/MKS_TEST1.txt");
+            result = sshManger.getFile("/info1/informatica/infodvlx/SrcFiles/EXCEPTION.TXT", "\\\\dhp\\dfs\\Non-Integration\\SAFeData\\SixDegrees\\EXCEPTION1re.txt");
+            sshManger.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }

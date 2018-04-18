@@ -1,0 +1,28 @@
+   @RequestMapping(value = "/info/getAttachment",method = RequestMethod.GET)
+    public void getAttachment(HttpServletResponse response) throws IOException {
+        InputStream inputStream = new FileInputStream("src/main/resources/TEST_MKS.txt");
+        response.addHeader("Content-disposition","attachment;filename=test.txt");
+        response.setContentType("txt/plain");
+
+        IOUtils.copy(inputStream, response.getOutputStream());
+        response.flushBuffer();
+    }
+
+    @RequestMapping(value = "/info/sendAttachment", method = RequestMethod.POST)
+    public String sendAttachment(@RequestParam("file")MultipartFile file){
+        String UPLOADED_FOLDER = "src/main/resources/";
+        if(file.isEmpty()){
+            return "Empty file sent";
+        }
+
+        try{
+            byte[] bytes = file.getBytes();
+            Files.write(Paths.get(UPLOADED_FOLDER + file.getOriginalFilename()), bytes);
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+        return "File placed on local folder" + UPLOADED_FOLDER;
+
+    }
