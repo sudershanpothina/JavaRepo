@@ -1,0 +1,42 @@
+compile('com.jcraft:jsch:0.1.50')
+
+public class SSHManager {
+	protected JSch jSch;
+	protected Session session;
+
+	public void SSHConnect(String userName, String password, String host, String knownHosts) throws JSchException, IOException {
+		jSch = new JSch();
+		jSch.setKnownHosts(knownHosts);
+		session = jSch.getSession(userName,host,22);
+		session.setPassword(password);
+		session.connect(6000);
+
+	}
+
+	public String execCommandChannel(String command) throws JSchException, IOException {
+		StringBuilder outputBuffer =new StringBuilder();
+		Channel channel =null;
+		channel =session.openChannel("exec");
+		((ChannelExec)channel).setCommand(command);
+		InputStream commandOutput = channel.getInputStream();
+		channel.connect();
+
+		int readByte = commandOutput.read();
+
+		System.out.println(readByte);
+		while(readByte != 0xffffffff)
+		{
+			outputBuffer.append((char)readByte);
+			readByte = commandOutput.read();
+		}
+		channel.disconnect();
+		System.out.println("execution inprocess \n"+outputBuffer.toString());
+		return outputBuffer.toString();
+	}
+
+	public  void close() {
+		session.disconnect();
+		System.out.println("Connection closed");
+	}
+
+}

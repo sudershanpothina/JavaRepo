@@ -1,0 +1,41 @@
+compile('com.googlecode.json-simple:json-simple:1.1')
+
+public class FilterJob {
+	private static boolean jobCheck(String env,String workflow, String folder) throws FileNotFoundException, IOException, ParseException {
+		boolean invalid = false;
+		JSONParser parser = new JSONParser();
+		Object fileContent = parser.parse(new FileReader("src/main/resources/FilterJobs.json"));
+		JSONArray jsonArray = new JSONArray();
+		jsonArray.add(fileContent);
+		for(Object envKey: jsonArray ){
+			JSONObject envKeyJSON=(JSONObject) envKey;
+			JSONArray jobArray = (JSONArray) envKeyJSON.get(env.toUpperCase());
+			Iterator jobs = jobArray.iterator();
+			while (jobs.hasNext()) {
+				Object jobContent =  jobs.next();
+				JSONObject jsonJobContent = (JSONObject) jobContent;
+				if(jsonJobContent.get("folder").equals(folder) && jsonJobContent.get("workflow").equals(workflow)){
+					invalid = true;
+				}
+				System.out.println("Folder: "+jsonJobContent.get("folder"));
+				System.out.println("worflow: "+jsonJobContent.get("workflow"));
+			}
+
+		}
+		return invalid;
+	}
+
+
+
+	public static void main(String args[]) {
+		try {
+			Boolean result = jobCheck("dvlx", "workflow3", "folder2");
+			System.out.printf(result.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+	}
+}
